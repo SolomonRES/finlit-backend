@@ -6,8 +6,8 @@ Node.js + Express API server for [FinLit](https://solomonres.github.io/FinLit/) 
 
 ## Live Demo
 
-**API Explorer:** `https://something.onrender.com`  
-**Base URL:** `https://something.onrender.com/api`
+**API Explorer:** `https://finlit-backend-zwic.onrender.com/api`  
+**Base URL:** `https://finlit-backend-zwic.onrender.com/`
 
 ---
 
