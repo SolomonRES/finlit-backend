@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinLit API Explorer</title>
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- background orbs -->
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+
+  <!-- NAVBAR -->
+  <nav class="nav-wrapper">
+    <div class="nav-container">
+      <div class="nav-content">
+        <a href="/" class="logo">
+          <img src="/assets/finlit-logo.png" alt="FinLit" class="logo-icon" />
+          <span class="logo-text">FinLit</span>
+        </a>
+        <div class="nav-divider"></div>
+        <span class="nav-subtitle">API Explorer</span>
+        <div class="nav-right">
+          <span class="tech-badge">Node.js · Express</span>
+          <span class="live-indicator">
+            <span class="live-dot"></span>
+            Live
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container">
+      <span class="hero-tag">REST API</span>
+      <h1 class="hero-title">FinLit API</h1>
+      <p class="hero-subtitle">
+        Interactive documentation for the backend server powering the<br class="hero-br" />
+        FinLit financial literacy platform.
+      </p>
+      <div class="base-url-card">
+        <span class="base-url-label">Base URL</span>
+        <code class="base-url-value" id="base-url">loading…</code>
+        <button class="copy-btn" id="copy-btn" onclick="copyBaseUrl()" title="Copy">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-number">13</span>
+          <span class="stat-label">Courses</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">6</span>
+          <span class="stat-label">Domains</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">3</span>
+          <span class="stat-label">Endpoints</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-number">GET</span>
+          <span class="stat-label">Methods</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ENDPOINTS -->
+  <section class="endpoints-section">
+    <div class="container">
+      <h2 class="section-title">Available Endpoints</h2>
+      <p class="section-subtitle">Click any endpoint to try it live against the server.</p>
+
+      <div class="endpoints-list">
+
+        <!-- all courses -->
+        <div class="endpoint-card" id="ep-all" onclick="fetchAllCourses()">
+          <div class="endpoint-left">
+            <span class="method-badge">GET</span>
+            <div class="endpoint-info">
+              <span class="endpoint-path">/api/courses</span>
+              <span class="endpoint-desc">Returns all 13 financial literacy courses across every domain</span>
+            </div>
+          </div>
+          <button class="try-btn" tabindex="-1">
+            Try it
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- course by ID -->
+        <div class="endpoint-card" id="ep-id">
+          <div class="endpoint-left">
+            <span class="method-badge">GET</span>
+            <div class="endpoint-info">
+              <span class="endpoint-path">/api/courses/<em>:id</em></span>
+              <span class="endpoint-desc">Returns a single course by its numeric ID (1 - 13)</span>
+            </div>
+          </div>
+          <div class="endpoint-controls" onclick="event.stopPropagation()">
+            <input
+              type="number"
+              id="course-id-input"
+              class="param-input"
+              placeholder="ID (1-13)"
+              min="1"
+              max="13"
+              value="1"
+            />
+            <button class="try-btn" onclick="fetchCourseById()">
+              Try it
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- by domain -->
+        <div class="endpoint-card" id="ep-domain">
+          <div class="endpoint-left">
+            <span class="method-badge">GET</span>
+            <div class="endpoint-info">
+              <span class="endpoint-path">/api/courses/domain/<em>:key</em></span>
+              <span class="endpoint-desc">Returns all courses belonging to a specific financial domain</span>
+            </div>
+          </div>
+          <div class="endpoint-controls" onclick="event.stopPropagation()">
+            <select id="domain-key-select" class="param-select">
+              <option value="ib">ib - Investment Banking</option>
+              <option value="cm">cm - Capital Markets</option>
+              <option value="am">am - Asset Management</option>
+              <option value="cf">cf - Corporate Finance</option>
+              <option value="re">re - Real Estate Finance</option>
+              <option value="ir">ir - Insurance &amp; Risk</option>
+            </select>
+            <button class="try-btn" onclick="fetchByDomain()">
+              Try it
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section class="results-section" id="results-section">
+    <div class="container">
+      <div class="results-header">
+        <div class="results-meta">
+          <code class="active-endpoint" id="active-endpoint"></code>
+          <span class="result-count" id="result-count"></span>
+        </div>
+        <div class="results-actions">
+          <button class="view-toggle active" id="toggle-cards" onclick="setView('cards')">Cards</button>
+          <button class="view-toggle" id="toggle-json" onclick="setView('json')">JSON</button>
+          <button class="close-results-btn" onclick="closeResults()" title="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- cards view -->
+      <div id="cards-view">
+        <div class="courses-grid" id="courses-grid"></div>
+      </div>
+
+      <!-- JSON view -->
+      <div id="json-view" style="display:none">
+        <pre class="json-block" id="json-block"></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <button class="modal-close-btn" onclick="closeModal()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="modal-content" id="modal-content"></div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <img src="/assets/finlit-logo.png" alt="FinLit" class="footer-logo" />
+          <span class="footer-name">FinLit</span>
+        </div>
+        <span class="footer-sep">·</span>
+        <span class="footer-text">Powered by Node.js &amp; Express</span>
+        <span class="footer-sep">·</span>
+        <span class="footer-text">Deployed on Render</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    // Initialise base URL display
+    const origin = window.location.origin;
+    document.getElementById('base-url').textContent = origin;
+
+    function copyBaseUrl() {
+      navigator.clipboard.writeText(origin).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.textContent = '✓';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+          btn.classList.remove('copied');
+        }, 1500);
+      });
+    }
+
+    // Domain colours
+    const DOMAIN_COLORS = {
+      ib: { bg: 'rgba(23,23,23,0.08)', text: '#171717', border: 'rgba(23,23,23,0.15)' },
+      cm: { bg: 'rgba(29,78,216,0.08)', text: '#1d4ed8', border: 'rgba(29,78,216,0.15)' },
+      am: { bg: 'rgba(21,128,61,0.08)',  text: '#15803d', border: 'rgba(21,128,61,0.15)'  },
+      cf: { bg: 'rgba(124,58,237,0.08)', text: '#7c3aed', border: 'rgba(124,58,237,0.15)' },
+      re: { bg: 'rgba(217,119,6,0.08)',  text: '#d97706', border: 'rgba(217,119,6,0.15)'  },
+      ir: { bg: 'rgba(220,38,38,0.08)',  text: '#dc2626', border: 'rgba(220,38,38,0.15)'  },
+    };
+
+    function domainStyle(key) {
+      const c = DOMAIN_COLORS[key] || DOMAIN_COLORS.ib;
+      return `background:${c.bg};color:${c.text};border-color:${c.border}`;
+    }
+
+    function statusMeta(status) {
+      if (status === 'completed')    return { icon: '✓', label: 'Completed',    cls: 'status-completed' };
+      if (status === 'locked')       return { icon: '🔒', label: 'Locked',       cls: 'status-locked' };
+      return                                { icon: '○', label: 'In Progress',  cls: 'status-pending' };
+    }
+
+    // State
+    let cachedCourses = [];
+    let currentView   = 'cards';
+    let lastJson      = null;
+
+    // Fetch helpers
+    async function fetchAllCourses() {
+      activateCard('ep-all');
+      showResults('GET /api/courses', null);
+      setLoading();
+      const res  = await fetch('/api/courses');
+      const data = await res.json();
+      renderResults(data, 'GET /api/courses');
+    }
+
+    async function fetchCourseById() {
+      const id  = parseInt(document.getElementById('course-id-input').value) || 1;
+      activateCard('ep-id');
+      showResults(`GET /api/courses/${id}`, null);
+      setLoading();
+      const res = await fetch(`/api/courses/${id}`);
+      if (!res.ok) { showError('Course not found - try an ID between 1 and 13.'); return; }
+      const data = await res.json();
+      renderResults([data], `GET /api/courses/${id}`);
+    }
+
+    async function fetchByDomain() {
+      const key    = document.getElementById('domain-key-select').value;
+      const labels = { ib:'Investment Banking', cm:'Capital Markets', am:'Asset Management', cf:'Corporate Finance', re:'Real Estate Finance', ir:'Insurance & Risk' };
+      activateCard('ep-domain');
+      showResults(`GET /api/courses/domain/${key}`, null);
+      setLoading();
+      const res  = await fetch(`/api/courses/domain/${key}`);
+      const data = await res.json();
+      renderResults(data, `GET /api/courses/domain/${key}`);
+    }
+
+    // UI helpers
+    function activateCard(id) {
+      document.querySelectorAll('.endpoint-card').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function showResults(endpoint, _label) {
+      const sec = document.getElementById('results-section');
+      sec.classList.add('visible');
+      document.getElementById('active-endpoint').textContent = endpoint;
+      sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function closeResults() {
+      document.getElementById('results-section').classList.remove('visible');
+      document.querySelectorAll('.endpoint-card').forEach(el => el.classList.remove('active'));
+    }
+
+    function setLoading() {
+      document.getElementById('result-count').textContent = '';
+      document.getElementById('courses-grid').innerHTML = '<div class="loading-indicator"><div class="spinner"></div><span>Fetching from server…</span></div>';
+      document.getElementById('json-block').textContent = '';
+    }
+
+    function showError(msg) {
+      document.getElementById('courses-grid').innerHTML = `<div class="error-msg">${msg}</div>`;
+    }
+
+    function renderResults(data, endpoint) {
+      cachedCourses = data;
+      lastJson      = data;
+      const count   = data.length;
+      document.getElementById('result-count').textContent = `${count} result${count !== 1 ? 's' : ''}`;
+      document.getElementById('active-endpoint').textContent = endpoint;
+
+      // Cards
+      if (data.length === 0) {
+        document.getElementById('courses-grid').innerHTML = '<div class="error-msg">No courses found for this query.</div>';
+      } else {
+        document.getElementById('courses-grid').innerHTML = data.map(c => buildCard(c)).join('');
+      }
+
+      // JSON
+      document.getElementById('json-block').textContent = JSON.stringify(count === 1 ? data[0] : data, null, 2);
+
+      // Re-apply current view
+      setView(currentView);
+    }
+
+    function buildCard(c) {
+      const s = statusMeta(c.status);
+      return `
+        <div class="course-card" onclick="openModal(${c._id})">
+          <div class="course-thumb">
+            <img src="/${c.img_name}" alt="${c.title}" loading="lazy" onerror="this.closest('.course-thumb').classList.add('no-img')" />
+            <div class="thumb-placeholder">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            </div>
+          </div>
+          <div class="course-body">
+            <span class="domain-badge" style="${domainStyle(c.domain_key)}">${c.domain}</span>
+            <h3 class="course-title">${c.title}</h3>
+            <p class="course-desc">${c.description}</p>
+            <div class="course-footer">
+              <span class="course-meta-item">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                ${c.duration} min
+              </span>
+              <span class="course-meta-item ${s.cls}">${s.icon} ${s.label}</span>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function setView(v) {
+      currentView = v;
+      document.getElementById('cards-view').style.display = v === 'cards' ? 'block' : 'none';
+      document.getElementById('json-view').style.display  = v === 'json'  ? 'block' : 'none';
+      document.getElementById('toggle-cards').classList.toggle('active', v === 'cards');
+      document.getElementById('toggle-json').classList.toggle('active',  v === 'json');
+    }
+
+    // Modal
+    function openModal(id) {
+      const c = cachedCourses.find(x => x._id === id);
+      if (!c) return;
+      const s = statusMeta(c.status);
+      document.getElementById('modal-content').innerHTML = `
+        <div class="modal-thumb">
+          <img src="/${c.img_name}" alt="${c.title}" onerror="this.closest('.modal-thumb').classList.add('no-img')" />
+          <div class="thumb-placeholder">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          </div>
+        </div>
+        <div class="modal-body">
+          <span class="domain-badge" style="${domainStyle(c.domain_key)}">${c.domain}</span>
+          <h2 class="modal-title">${c.title}</h2>
+          <p class="modal-desc">${c.description}</p>
+          <div class="modal-meta-grid">
+            <div class="modal-meta-item">
+              <span class="meta-label">Duration</span>
+              <span class="meta-value">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                ${c.duration} minutes
+              </span>
+            </div>
+            <div class="modal-meta-item">
+              <span class="meta-label">Status</span>
+              <span class="meta-value ${s.cls}">${s.icon} ${s.label}</span>
+            </div>
+            <div class="modal-meta-item">
+              <span class="meta-label">Domain Key</span>
+              <span class="meta-value"><code class="inline-code">${c.domain_key}</code></span>
+            </div>
+            <div class="modal-meta-item">
+              <span class="meta-label">Course ID</span>
+              <span class="meta-value"><code class="inline-code">#${c._id}</code></span>
+            </div>
+          </div>
+          <div class="modal-api-row">
+            <span class="api-label">Endpoint</span>
+            <code class="api-code">GET ${origin}/api/courses/${c._id}</code>
+          </div>
+        </div>`;
+      document.getElementById('modal-overlay').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeModal(); closeResults(); }
+    });
+  </script>
+</body>
+</html>
