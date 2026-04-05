@@ -79,7 +79,7 @@
     "domain_key": "ib",
     "duration": 65,
     "difficulty": "advanced",
-    "status": "locked",
+    "status": "not-completed",
     "img_name": "assets/financial-modeling.png",
     "topics": [
       "Income statement modeling",
