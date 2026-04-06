@@ -219,7 +219,7 @@
     function copyBaseUrl() {
       navigator.clipboard.writeText(origin).then(() => {
         const btn = document.getElementById('copy-btn');
-        btn.textContent = '✓';
+        btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
         btn.classList.add('copied');
         setTimeout(() => {
           btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
@@ -244,9 +244,9 @@
     }
 
     function statusMeta(status) {
-      if (status === 'completed')    return { icon: '✓', label: 'Completed',    cls: 'status-completed' };
-      if (status === 'locked')       return { icon: '🔒', label: 'Locked',       cls: 'status-locked' };
-      return                                { icon: '○', label: 'In Progress',  cls: 'status-pending' };
+      if (status === 'completed')    return { icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>', label: 'Completed',    cls: 'status-completed' };
+      if (status === 'locked')       return { icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>', label: 'Locked',       cls: 'status-locked' };
+      return                                { icon: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>', label: 'In Progress',  cls: 'status-pending' };
     }
 
     // State
