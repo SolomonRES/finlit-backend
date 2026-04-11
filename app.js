@@ -91,19 +91,36 @@ let yahooCookie = null;
 let yahooCrumb = null;
 let yahooAuthExpiry = 0;
 
+const YF_HEADERS = {
+  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+  "Accept": "application/json, text/plain, */*",
+  "Referer": "https://finance.yahoo.com",
+  "Origin": "https://finance.yahoo.com",
+};
+
 async function getYahooAuth() {
   const now = Date.now();
   if (yahooCookie && yahooCrumb && now < yahooAuthExpiry) {
     return { cookie: yahooCookie, crumb: yahooCrumb };
   }
-  const cookieRes = await fetch("https://fc.yahoo.com", { redirect: "manual" });
-  const setCookie = cookieRes.headers.get("set-cookie") || "";
-  yahooCookie = setCookie.split(";")[0];
-  const crumbRes = await fetch("https://query2.finance.yahoo.com/v1/test/getcrumb", {
-    headers: { "User-Agent": "Mozilla/5.0", Cookie: yahooCookie },
+  // Use finance.yahoo.com (not fc.yahoo.com) — more reliable on server infra
+  const cookieRes = await fetch("https://finance.yahoo.com", {
+    headers: { ...YF_HEADERS, Accept: "text/html,application/xhtml+xml" },
   });
-  yahooCrumb = await crumbRes.text();
-  yahooAuthExpiry = now + 10 * 60 * 1000; // cache 10 min
+  // Node 18+ exposes getSetCookie() for multiple Set-Cookie headers
+  let cookieParts = [];
+  if (typeof cookieRes.headers.getSetCookie === "function") {
+    cookieParts = cookieRes.headers.getSetCookie().map((c) => c.split(";")[0]);
+  } else {
+    const raw = cookieRes.headers.get("set-cookie") || "";
+    if (raw) cookieParts = raw.split(",").map((c) => c.split(";")[0].trim()).filter(Boolean);
+  }
+  yahooCookie = cookieParts.join("; ");
+  const crumbRes = await fetch("https://query2.finance.yahoo.com/v1/test/getcrumb", {
+    headers: { ...YF_HEADERS, Cookie: yahooCookie },
+  });
+  yahooCrumb = (await crumbRes.text()).trim();
+  yahooAuthExpiry = now + 10 * 60 * 1000;
   return { cookie: yahooCookie, crumb: yahooCrumb };
 }
 
@@ -115,30 +132,44 @@ app.get("/api/quotes", async (req, res) => {
   if (!/^[A-Za-z0-9^=.,\-]+$/.test(symbols)) {
     return res.status(400).json({ error: "Invalid characters in symbols" });
   }
+
+  // Attempt 1: no-auth fast path (works when Yahoo allows unauthenticated requests)
+  try {
+    const directRes = await fetch(
+      `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}`,
+      { headers: YF_HEADERS }
+    );
+    if (directRes.ok) {
+      const data = await directRes.json();
+      const results = data.quoteResponse?.result;
+      if (results && results.length > 0) return res.json(results);
+    }
+  } catch { /* fall through */ }
+
+  // Attempt 2: cookie + crumb on query2
   try {
     const { cookie, crumb } = await getYahooAuth();
     const url = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&crumb=${encodeURIComponent(crumb)}`;
-    const response = await fetch(url, {
-      headers: { "User-Agent": "Mozilla/5.0", Cookie: cookie },
-    });
-    if (!response.ok) {
-      // If auth expired, clear cache and retry once
-      yahooCookie = null;
-      yahooCrumb = null;
-      yahooAuthExpiry = 0;
-      const retry = await getYahooAuth();
-      const retryUrl = `https://query2.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&crumb=${encodeURIComponent(retry.crumb)}`;
-      const retryRes = await fetch(retryUrl, {
-        headers: { "User-Agent": "Mozilla/5.0", Cookie: retry.cookie },
-      });
-      if (!retryRes.ok) throw new Error(`Yahoo API ${retryRes.status}`);
-      const retryData = await retryRes.json();
-      return res.json(retryData.quoteResponse?.result || []);
+    const response = await fetch(url, { headers: { ...YF_HEADERS, Cookie: cookie } });
+    if (response.ok) {
+      const data = await response.json();
+      const results = data.quoteResponse?.result || [];
+      if (results.length > 0) return res.json(results);
     }
+    // Auth may have expired — clear and fall through to attempt 3
+    yahooCookie = null; yahooCrumb = null; yahooAuthExpiry = 0;
+  } catch { /* fall through */ }
+
+  // Attempt 3: fresh auth on query1 (different Yahoo server)
+  try {
+    const { cookie, crumb } = await getYahooAuth();
+    const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(symbols)}&crumb=${encodeURIComponent(crumb)}`;
+    const response = await fetch(url, { headers: { ...YF_HEADERS, Cookie: cookie } });
+    if (!response.ok) throw new Error(`Yahoo ${response.status}`);
     const data = await response.json();
-    res.json(data.quoteResponse?.result || []);
+    return res.json(data.quoteResponse?.result || []);
   } catch (err) {
-    res.status(502).json({ error: "Failed to fetch market data" });
+    return res.status(502).json({ error: "Failed to fetch market data" });
   }
 });
 
