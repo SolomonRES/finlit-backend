@@ -58,7 +58,7 @@
     <div class="container">
       <div class="stats-grid">
         <div class="stat-card">
-          <span class="stat-number">13</span>
+          <span class="stat-number">25</span>
           <span class="stat-label">Courses</span>
         </div>
         <div class="stat-card">
@@ -66,11 +66,14 @@
           <span class="stat-label">Domains</span>
         </div>
         <div class="stat-card">
-          <span class="stat-number">3</span>
+          <span class="stat-number">6</span>
           <span class="stat-label">Endpoints</span>
         </div>
-        <div class="stat-card">
-          <span class="stat-number">GET</span>
+        <div class="stat-card stat-card-methods">
+          <span class="stat-number stat-number-text">
+            <span class="stat-method stat-method-get">GET</span>
+            <span class="stat-method stat-method-post">POST</span>
+          </span>
           <span class="stat-label">Methods</span>
         </div>
       </div>
@@ -91,7 +94,7 @@
             <span class="method-badge">GET</span>
             <div class="endpoint-info">
               <span class="endpoint-path">/api/courses</span>
-              <span class="endpoint-desc">Returns all 13 financial literacy courses across every domain</span>
+              <span class="endpoint-desc">Returns all 25 financial literacy courses across every domain</span>
             </div>
           </div>
           <button class="try-btn" tabindex="-1">
@@ -106,7 +109,7 @@
             <span class="method-badge">GET</span>
             <div class="endpoint-info">
               <span class="endpoint-path">/api/courses/<em>:id</em></span>
-              <span class="endpoint-desc">Returns a single course by its numeric ID (1 - 13)</span>
+              <span class="endpoint-desc">Returns a single course by its numeric ID (1 - 25)</span>
             </div>
           </div>
           <div class="endpoint-controls" onclick="event.stopPropagation()">
@@ -114,9 +117,9 @@
               type="number"
               id="course-id-input"
               class="param-input"
-              placeholder="ID (1-13)"
+              placeholder="ID (1-25)"
               min="1"
-              max="13"
+              max="25"
               value="1"
             />
             <button class="try-btn" onclick="fetchCourseById()">
@@ -148,6 +151,95 @@
               Try it
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
             </button>
+          </div>
+        </div>
+
+        <!-- GET watchlist -->
+        <div class="endpoint-card" id="ep-watchlist" onclick="fetchWatchlist()">
+          <div class="endpoint-left">
+            <span class="method-badge">GET</span>
+            <div class="endpoint-info">
+              <span class="endpoint-path">/api/watchlist</span>
+              <span class="endpoint-desc">Returns all active watchlist entries (auto-expire after 5 min)</span>
+            </div>
+          </div>
+          <button class="try-btn" tabindex="-1">
+            Try it
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- POST watchlist entry -->
+        <div class="endpoint-card post-card" id="ep-post" onclick="togglePostForm(event)">
+          <div class="endpoint-left">
+            <span class="method-badge method-post">POST</span>
+            <div class="endpoint-info">
+              <span class="endpoint-path">/api/watchlist</span>
+              <span class="endpoint-desc">Add a stock to the watchlist (Joi-validated, auto-deletes in 5 min)</span>
+            </div>
+          </div>
+          <button class="try-btn try-btn-post" tabindex="-1">
+            Try it
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+
+        <!-- POST form (hidden by default) -->
+        <div class="post-form-wrapper" id="post-form-wrapper">
+          <div class="post-form-card">
+            <h3 class="post-form-title">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+              Add to Watchlist
+              <span style="margin-left:auto;font-size:11px;font-weight:500;color:#737373;display:flex;align-items:center;gap:4px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Auto-expires in 5 min
+              </span>
+            </h3>
+            <div class="post-banner" id="post-banner"></div>
+            <form class="post-form" id="post-form" onsubmit="postWatchlist(event)">
+              <div class="post-form-row post-form-row-2col">
+                <div class="post-field">
+                  <label for="pf-symbol">Ticker Symbol</label>
+                  <input id="pf-symbol" type="text" placeholder="e.g. AAPL" maxlength="5" style="text-transform:uppercase" required />
+                </div>
+                <div class="post-field">
+                  <label for="pf-name">Company Name</label>
+                  <input id="pf-name" type="text" placeholder="e.g. Apple Inc." maxlength="60" required />
+                </div>
+              </div>
+              <div class="post-form-row post-form-row-2col">
+                <div class="post-field">
+                  <label for="pf-price">Target Price ($)</label>
+                  <input id="pf-price" type="number" step="0.01" placeholder="e.g. 185.50" min="0.01" required />
+                </div>
+                <div class="post-field">
+                  <label for="pf-sector">Sector</label>
+                  <select id="pf-sector" required>
+                    <option value="">Select sector…</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Financials">Financials</option>
+                    <option value="Energy">Energy</option>
+                    <option value="Consumer Discretionary">Consumer Discretionary</option>
+                    <option value="Industrials">Industrials</option>
+                    <option value="Real Estate">Real Estate</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Materials">Materials</option>
+                    <option value="Communication Services">Communication Services</option>
+                  </select>
+                </div>
+              </div>
+              <div class="post-form-row">
+                <div class="post-field">
+                  <label for="pf-notes">Notes <span style="font-weight:400;color:#a3a3a3;font-size:11px">(optional)</span></label>
+                  <textarea id="pf-notes" placeholder="Why are you watching this stock?" maxlength="200" rows="2"></textarea>
+                </div>
+              </div>
+              <button type="submit" class="post-submit-btn" id="post-submit-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                Add to Watchlist
+              </button>
+            </form>
           </div>
         </div>
 
@@ -419,6 +511,87 @@
     function closeModal() {
       document.getElementById('modal-overlay').classList.remove('open');
       document.body.style.overflow = '';
+    }
+
+    // POST form toggle
+    function togglePostForm(e) {
+      if (e.target.closest('.post-form-wrapper')) return;
+      const wrapper = document.getElementById('post-form-wrapper');
+      wrapper.classList.toggle('open');
+      const card = document.getElementById('ep-post');
+      card.classList.toggle('active');
+    }
+
+    // GET watchlist
+    async function fetchWatchlist() {
+      const card = document.getElementById('ep-watchlist');
+      card.classList.add('active');
+      try {
+        const res = await fetch('/api/watchlist');
+        const data = await res.json();
+        if (data.length === 0) {
+          showResults('Watchlist', [{ note: 'No active entries. POST one first — they auto-expire after 5 minutes.' }]);
+        } else {
+          showResults('Watchlist (' + data.length + ' active)', data);
+        }
+      } catch {
+        showResults('Error', [{ error: 'Could not reach server.' }]);
+      }
+      setTimeout(() => card.classList.remove('active'), 600);
+    }
+
+    // POST watchlist entry
+    async function postWatchlist(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const banner = document.getElementById('post-banner');
+      const btn = document.getElementById('post-submit-btn');
+
+      const symbol = document.getElementById('pf-symbol').value.trim().toUpperCase();
+      const name = document.getElementById('pf-name').value.trim();
+      const targetPrice = parseFloat(document.getElementById('pf-price').value);
+      const sector = document.getElementById('pf-sector').value;
+      const notes = document.getElementById('pf-notes').value.trim();
+
+      // Client-side validation
+      const errs = [];
+      if (!symbol || !/^[A-Z]{1,5}$/.test(symbol)) errs.push('Symbol must be 1–5 letters');
+      if (!name || name.length < 2) errs.push('Company name must be at least 2 characters');
+      if (isNaN(targetPrice) || targetPrice <= 0) errs.push('Target price must be a positive number');
+      if (!sector) errs.push('Please select a sector');
+      if (notes.length > 200) errs.push('Notes must be 200 characters or fewer');
+
+      if (errs.length) {
+        banner.className = 'post-banner post-banner-error';
+        banner.textContent = errs.join('. ');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px"></span> Adding…';
+
+      try {
+        const res = await fetch('/api/watchlist', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ symbol, name, targetPrice, notes, sector }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          banner.className = 'post-banner post-banner-error';
+          banner.textContent = Array.isArray(data.error) ? data.error.join('. ') : data.error;
+        } else {
+          banner.className = 'post-banner post-banner-success';
+          banner.textContent = data.symbol + ' ($' + Number(data.targetPrice).toFixed(2) + ') added - auto-removes in 5 min';
+          document.getElementById('post-form').reset();
+        }
+      } catch {
+        banner.className = 'post-banner post-banner-error';
+        banner.textContent = 'Could not reach server. Is it running?';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg> Add to Watchlist';
+      }
     }
 
     document.addEventListener('keydown', e => {
