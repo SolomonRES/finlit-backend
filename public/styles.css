@@ -323,12 +323,19 @@ img { max-width: 100%; height: auto; display: block; }
   gap: 8px;
 }
 
+.stat-card-methods .stat-number-text {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
 .stat-method {
   display: inline-flex;
   align-items: center;
-  padding: 2px 10px;
+  justify-content: center;
+  padding: 3px 8px;
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -1015,6 +1022,13 @@ img { max-width: 100%; height: auto; display: block; }
   border-color: rgba(37,99,235,0.25);
 }
 
+.try-btn-get {
+  background: var(--color-get);
+}
+.try-btn-get:hover {
+  background: #15803d;
+}
+
 .try-btn-post {
   background: var(--color-post);
 }
@@ -1206,4 +1220,113 @@ img { max-width: 100%; height: auto; display: block; }
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
+}
+
+/* ===================== PUT ENDPOINT ===================== */
+
+:root {
+  --color-put:    #d97706;
+  --color-put-bg: #fffbeb;
+  --color-delete:    #dc2626;
+  --color-delete-bg: #fef2f2;
+}
+
+.method-put {
+  background: var(--color-put-bg);
+  color: var(--color-put);
+  border-color: rgba(217,119,6,0.25);
+}
+
+.try-btn-put { background: var(--color-put); }
+.try-btn-put:hover { background: #b45309; }
+
+.put-card.active {
+  border-color: var(--color-put);
+  box-shadow: 0 0 0 1px var(--color-put), var(--shadow-md);
+}
+
+.put-form-title svg { color: var(--color-put); }
+
+.post-field input:focus.put-focus,
+.put-form .post-field input:focus,
+.put-form .post-field textarea:focus,
+.put-form .post-field select:focus {
+  border-color: var(--color-put);
+  box-shadow: 0 0 0 3px rgba(217,119,6,0.1);
+}
+
+.put-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  background: var(--color-put);
+  color: var(--color-white);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
+  align-self: flex-start;
+  margin-top: 4px;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+.put-submit-btn:hover {
+  background: #b45309;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.put-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===================== DELETE ENDPOINT ===================== */
+
+.method-delete {
+  background: var(--color-delete-bg);
+  color: var(--color-delete);
+  border-color: rgba(220,38,38,0.25);
+}
+
+.try-btn-delete { background: var(--color-delete); }
+.try-btn-delete:hover { background: #b91c1c; }
+
+.delete-card.active {
+  border-color: var(--color-delete);
+  box-shadow: 0 0 0 1px var(--color-delete), var(--shadow-md);
+}
+
+.delete-result-banner {
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  max-height: 0;
+  overflow: hidden;
+  padding: 0;
+  transition: all var(--transition);
+}
+
+.delete-result-banner.post-banner-success,
+.delete-result-banner.post-banner-error {
+  padding: 10px 14px;
+  max-height: 80px;
+}
+
+/* stat method badges for PUT / DELETE */
+.stat-method-put {
+  background: var(--color-put-bg);
+  color: var(--color-put);
+  border: 1px solid rgba(217,119,6,0.25);
+}
+
+.stat-method-delete {
+  background: var(--color-delete-bg);
+  color: var(--color-delete);
+  border: 1px solid rgba(220,38,38,0.25);
 }

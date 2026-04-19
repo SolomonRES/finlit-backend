@@ -197,6 +197,39 @@ app.post("/api/watchlist", (req, res) => {
   res.status(201).json(entry);
 });
 
+// PUT update a watchlist entry
+app.put("/api/watchlist/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = watchlist.findIndex((w) => w._id === id);
+  if (idx === -1) return res.status(404).json({ error: "Entry not found" });
+
+  const { error } = validateWatchlistEntry(req.body);
+  if (error) {
+    return res.status(400).json({ error: error.details.map((d) => d.message) });
+  }
+
+  watchlist[idx] = {
+    ...watchlist[idx],
+    symbol: req.body.symbol.toUpperCase(),
+    name: req.body.name,
+    targetPrice: req.body.targetPrice,
+    notes: req.body.notes || "",
+    sector: req.body.sector,
+  };
+
+  res.json(watchlist[idx]);
+});
+
+// DELETE a watchlist entry
+app.delete("/api/watchlist/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const idx = watchlist.findIndex((w) => w._id === id);
+  if (idx === -1) return res.status(404).json({ error: "Entry not found" });
+
+  watchlist.splice(idx, 1);
+  res.json({ message: "Entry deleted successfully" });
+});
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`FinLit API server running on port ${PORT}`);
